@@ -9,17 +9,74 @@ u64 gcd(u64 a, u64 b) {
     }
 }
 
-u64 reverse(u64 a, u64 M) {
-    if(!a) return 0;
-    if(!M) return a == 1;
-    return ((M * (a - reverse(M % a, a)) + 1) / a) % M;
+i64 diophantine(i64 a, i64 b, i64* x, i64* y) {
+    i64 ap = 1, aq = 0;
+    i64 bp = 0, bq = 1;
+    while(1) {
+        if(b == 0) {
+            *x = ap;
+            *y = aq;
+            return a;
+        }
+        i64 m = a / b;
+        a %= b;
+        ap -= bp * m;
+        aq -= bq * m;
+        if(a == 0) {
+            *x = bp;
+            *y = bq;
+            return b;
+        }
+        i64 n = b / a;
+        b %= a;
+        bp -= ap * n;
+        bq -= aq * n;
+    }
 }
 
-u64 pow(u64 a, u64 k, u64 M) {
+u64 reverse(u64 a, u64 M) {
+    u64 x = 1, y = 0;
+    while(1) {
+        if(a == 0) return y;
+        u64 k = a / M;
+        a %= M;
+        x -= y * k;
+        if(M == 0) return x;
+        u64 l = M / a;
+        M %= a;
+        y -= x * l;
+    }
+}
+
+u32 pow32(u32 a, u64 k, u32 M) {
+    u32 ans = 1;
+    while(k) {
+        if(k % 2) ans =  (u64)ans * a % M;
+        a = (u64)a * a % M;
+        k /= 2;
+    }
+    return ans;
+}
+
+inline u32 pow(u32 a, u64 k, u32 M) { return pow32(a, k, M); };
+
+u64 __modmul(u64 a, u64 b, u64 M) {
+    return (unsigned __int128) a * b % M;
+}
+
+//__modmul1 by kactl, adapted
+//note: M can be max 7'268'999'999'999'999'999
+//note: 0 <= a, b < M shall hold
+inline u64 __modmul1(u64 a, u64 b, u64 M) {
+	i64 ret = a * b - M * u64(1.L / M * a * b);
+	return ret + M * (ret < 0) - M * (ret >= (i64)M);
+}
+
+u64 pow64(u64 a, u64 k, u64 M) {
     u64 ans = 1;
     while(k) {
-        if(k % 2) ans =  ans * a % M;
-        a = a * a % M;
+        if(k % 2) ans = __modmul1(ans, a, M);
+        a = __modmul1(a, a, M);
         k /= 2;
     }
     return ans;
@@ -123,6 +180,38 @@ inline void mod_matrix2d(u64 A[2][2], u64 M) {
     A[1][1] %= M;
 }
 
+i32 fermat_single(u64 x, u64 a) {
+    return pow64(a, x-1, x) == 1;
+}
+
+#include <stdio.h>
+i32 miller_rabin_single(u64 x, u64 a) {
+    //x - 1 = 2^k * d
+    u64 d = x-1;
+    u64 k = 0;
+    while(d % 2 == 0) d /= 2, ++k;
+    u64 u = pow64(a, d, x);
+    if(u == 1) return 1;
+    while(k--) {
+        if(u + 1 == x) return 1;
+        u = __modmul(u, u, x);
+    }
+    return 0;
+}
+
+i32 is_prime(u64 x) {
+    //note: x can be max 7'268'999'999'999'999'999
+    if(x < 2) return 0;
+    if(x != 2 && !miller_rabin_single(x, 2)) return 0;
+    if(x != 3 && !miller_rabin_single(x, 3)) return 0;
+    return 1;
+    /*if(x < 2) return 0;
+    if(x != 2 && !fermat_single(x, 2)) return 0;
+    if(x != 7 && !fermat_single(x, 7)) return 0;
+    if(x != 61 && !fermat_single(x, 61)) return 0;
+    return 1;*/
+}
+
 u8 fact(u64 n, u64* primes, u8* exps) {
     u8 top = 0;
     for(u64 d = 2; d * d <= n; ++d) {
@@ -137,7 +226,7 @@ u8 fact(u64 n, u64* primes, u8* exps) {
     }
     if(n > 1) {
         primes[top] = n;
-        primes[top] = 1;
+        exps[top] = 1;
         ++top;
     }
     return top;

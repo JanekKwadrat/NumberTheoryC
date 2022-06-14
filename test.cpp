@@ -1,17 +1,26 @@
 #include <iostream>
 #include <ctime>
 #include "ntlib.h"
+#include "tester.h"
 
-void test();
-void test_fib();
+void test_fib_speed();
 void gen_fib();
+void test_dio();
 
 int main() {
 
-    test_fib();
-    test();
-    
+    dotests();
+
     return 0;
+}
+
+void test_dio() {
+    i64 a, b, x, y;
+    std::cout << "Please provide numbers a and b > ";
+    std::cin >> a >> b;
+    std::cout << "Solving ax + by = gcd(a, b) ...\n";
+    diophantine(a, b, &x, &y);
+    std::cout << "The numbers x and y < " << x << " " << y << "\n";
 }
 
 void gen_fib() {
@@ -21,35 +30,15 @@ void gen_fib() {
         std::cout << "    {";
         for(u64 x = 0; x < 256; ++x) {
             u64 itr = x << (8 * i);
-            std::cout << "{" << fib(itr - 1, Q) << ", " << fib(itr, Q) << ", " << fib(itr + 1, Q) << "}, ";
+            std::cout << "{" << fib(itr - 1, Q) << "," << fib(itr, Q) << "," << fib(itr + 1, Q) << "}";
+            if(x != 255) std::cout << ",";
         }
-        std::cout << "},\n";
+        if(i != 7) std::cout << "},\n";
     }
     std::cout << "}\n";
 }
 
-void test_fib() {
-    const u64 mod = 1e9 + 7;
-    i32 n = 10'000'000;
-    u64 f0 = 0, f1 = 1, f2;
-    bool fib_ok = true;
-    bool fib1_ok = true;
-    bool fibQ_ok = true;
-    for(i32 i = 0; i < n; ++i) {
-        if(f0 != fib(i, mod)) fib_ok = false;
-        if(f0 != fib1(i, mod)) fib1_ok = false;
-        if(f0 != fibQ(i)) fibQ_ok = false;
-        
-        f2 = f0 + f1;
-        f0 = f1 % mod;
-        f1 = f2 % mod;
-    }
-    std::cout << "fib " << (fib_ok ? "is correct" : "was wrong") << " on the first " << n << " numbers\n";
-    std::cout << "fib1 " << (fib1_ok ? "is correct" : "was wrong") << " on the first " << n << " numbers\n";
-    std::cout << "fibQ " << (fibQ_ok ? "is correct" : "was wrong") << " on the first " << n << " numbers\n";
-}
-
-void test() {
+void test_fib_speed() {
     i32 seed = 2137;
     i32 cases = 100'000'000;
     clock_t beg, end;

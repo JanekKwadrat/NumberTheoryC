@@ -1,3 +1,6 @@
+#ifndef RUSTLIKE
+#define RUSTLIKE
+
 typedef unsigned long long u64;
 typedef signed long long   i64;
 typedef unsigned int       u32;
@@ -19,3 +22,14 @@ const i16 i16_min = (i16)0x8000;
 const u8 u8_max = (u8)0xff;
 const i8 i8_max = (i8)0x7f;
 const i8 i8_min = (i8)0x80;
+
+#ifdef __SIZEOF_INT128__
+typedef unsigned __int128   u128;
+typedef          __int128   i128;
+//note: no min or max here
+#define RUSTLIKE128
+#else
+#warning "cannot define 128-bit types"
+#endif
+
+#endif
