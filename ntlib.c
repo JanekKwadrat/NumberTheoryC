@@ -58,13 +58,11 @@ u32 pow32(u32 a, u64 k, u32 M) {
     return ans;
 }
 
-inline u32 pow(u32 a, u64 k, u32 M) { return pow32(a, k, M); };
-
 u64 __modmul(u64 a, u64 b, u64 M) {
     return (unsigned __int128) a * b % M;
 }
 
-//__modmul1 by kactl, adapted
+//modmul by kactl, adapted
 //note: M can be max 7'268'999'999'999'999'999
 //note: 0 <= a, b < M shall hold
 inline u64 __modmul1(u64 a, u64 b, u64 M) {
@@ -82,40 +80,7 @@ u64 pow64(u64 a, u64 k, u64 M) {
     return ans;
 }
 
-i32 miller_rabin_single(u64 x, u64 a) {
-    //x - 1 = 2^k * d
-    u64 d = x - 1;
-    u64 k = 0;
-    while(d % 2 == 0) d /= 2, ++k;
-    u64 u = pow64(a, d, x);
-    
-    if(u == 1) return 1;
-    while(k--) {
-        if(u + 1 == x) return 1;
-        u = __modmul(u, u, x);
-    }
-    return 0;
-}
-
-i32 is_prime(u64 x) {
-    //note: x can be max 7'267'999'999'999'999'999
-    if(x < 2) return 0;
-    if(x != 2 && !miller_rabin_single(x, 2)) return 0;
-    if(x != 3 && !miller_rabin_single(x, 3)) return 0;
-    if(x != 5 && !miller_rabin_single(x, 5)) return 0;
-    if(x != 7 && !miller_rabin_single(x, 7)) return 0;
-    if(x != 11 && !miller_rabin_single(x, 11)) return 0;
-    if(x < 2'152'302'898'747ULL) return 1;
-    if(x != 13 && !miller_rabin_single(x, 13)) return 0;
-    if(x != 17 && !miller_rabin_single(x, 17)) return 0;
-    if(x != 19 && !miller_rabin_single(x, 19)) return 0;
-    if(x != 23 && !miller_rabin_single(x, 23)) return 0;
-    if(x < 3'825'123'056'546'413'051ULL) return 1;
-    if(x != 29 && !miller_rabin_single(x, 29)) return 0;
-    if(x != 31 && !miller_rabin_single(x, 31)) return 0;
-    if(x != 37 && !miller_rabin_single(x, 37)) return 0;
-    return 1;
-}
+inline u32 pow(u32 a, u64 k, u32 M) { return pow32(a, k, M); };
 
 //modmul by kactl, adapted
 //note: M can be max 7'268'999'999'999'999'999
@@ -125,7 +90,7 @@ inline u64 __modmul2(u64 a, u64 b, u64 M, f80 r) {
 	return ret + M * (ret < 0) - M * (ret >= (i64)M);
 }
 
-i32 miller_rabin_single1r(u64 x, u64 a, f80 r) {
+i32 miller_rabin_single(u64 x, u64 a, f80 r) {
     u64 y = x - 1, aa = a;
     u64 u = 1; u32 k = 0;
     while(y) {
@@ -143,7 +108,7 @@ i32 miller_rabin_single1r(u64 x, u64 a, f80 r) {
     return 0;
 }
 
-i32 is_prime1r(u64 x) {
+i32 is_prime(u64 x) {
     //note: x can be max 7'267'999'999'999'999'999
     if(x < 2) return 0;
     f80 r = 1.L / x;
