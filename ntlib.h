@@ -39,6 +39,7 @@ void mul_matrix2d(u64[2][2], u64[2][2]);
 void mod_matrix2d(u64[2][2], u64);
 
 int is_prime(u64);
+int is_prime1r(u64);
 
 u8 fact(u64, u64*, u8*);
 void primality(u32, u8*);

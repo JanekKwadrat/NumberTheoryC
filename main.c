@@ -1,11 +1,6 @@
-#include <iostream>
-#include <ctime>
+#include <stdio.h>
 #include "ntlib.h"
 #include "tester.h"
-
-void test_fib_speed();
-void gen_fib();
-void test_dio();
 
 int main() {
 
@@ -13,6 +8,13 @@ int main() {
 
     return 0;
 }
+
+/*
+#include <iostream>
+
+void test_fib_speed();
+void gen_fib();
+void test_dio();
 
 void test_dio() {
     i64 a, b, x, y;
@@ -88,4 +90,4 @@ void test_fib_speed() {
 
     std::cout << "rng finsished " << cases << " cases in " << (double)(end - beg) / CLOCKS_PER_SEC << " s\n";
     std::cout << "rng randomizes one case in " << (double)(end - beg) / CLOCKS_PER_SEC / (double)cases << " s on average\n";
-}
+}*/

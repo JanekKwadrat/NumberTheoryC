@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include "ntlib.h"
 
@@ -49,11 +50,7 @@ void dotests() {
     announce(-1, 0, .0, "primes");
     {   
         int ok;
-        clockme();
-        ok = is_prime(1'000'000'007) && is_prime(7'385'305'309'546'123);
-        announce(5, ok, clockme(), "is_prime with two big primes");
-        
-        const int n = 3'000'000;
+        const int n = 1 + 2'000'000;
         int * arr = (int*)calloc(n, sizeof(int));
         arr[0] = 1, arr[1] = 1;
         for(int i = 2; i * i < n; ++i) {
@@ -69,7 +66,24 @@ void dotests() {
                 break;
             }
         }
-        announce(4, ok, clockme(), "is_prime with numbers 0..3'000'000");
+        announce(4, ok, clockme(), "is_prime with numbers 0..2'000'000");
+        clockme();
+        ok = is_prime(1'000'000'007) && is_prime(7'385'305'309'546'123);
+        announce(5, ok, clockme(), "is_prime with two big primes");
+
+        ok = 1;
+        clockme();
+        for(int i = 0; i < n; ++i) {
+            if(!arr[i] != is_prime1r((u64)i)) {
+                printf("problem with %d\n", i);
+                ok = 0;
+                break;
+            }
+        }
+        announce(6, ok, clockme(), "is_prime1r with numbers 0..2'000'000");
+        clockme();
+        ok = is_prime1r(1'000'000'007) && is_prime1r(7'385'305'309'546'123);
+        announce(7, ok, clockme(), "is_prime1r with two big primes");
     }
 
     announce(-1, 0, .0, "complete");

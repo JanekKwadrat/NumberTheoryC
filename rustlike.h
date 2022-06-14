@@ -32,4 +32,8 @@ typedef          __int128   i128;
 #warning "cannot define 128-bit types"
 #endif
 
+typedef float              f32;
+typedef double             f64;
+typedef long double        f80;
+
 #endif
